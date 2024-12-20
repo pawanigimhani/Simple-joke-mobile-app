@@ -11,7 +11,6 @@ class JokeService {
 
   Future<List<Joke>> fetchJokes() async {
     try {
-      // Try to fetch from API first
       final response = await _dio.get(
         '$_baseUrl/Programming',
         queryParameters: {
@@ -24,13 +23,10 @@ class JokeService {
       if (response.statusCode == 200) {
         final jokeResponse = JokeResponse.fromJson(response.data as Map<String, dynamic>);
         if (!jokeResponse.error) {
-          // Cache the successful response
           await _cacheJokes(jokeResponse.jokes);
           return jokeResponse.jokes;
         }
       }
-
-      // If API fails or returns error, try to get cached jokes
       return await _getCachedJokes();
     } on DioException catch (e) {
       print('Network error: $e');
@@ -45,11 +41,9 @@ class JokeService {
     try {
       final prefs = await SharedPreferences.getInstance();
 
-      // Convert jokes to JSON and save
       final jokesJson = jokes.map((joke) => joke.toJson()).toList();
       await prefs.setString(_cacheKey, json.encode(jokesJson));
 
-      // Save cache timestamp
       await prefs.setString(_cacheDateKey, DateTime.now().toIso8601String());
     } catch (e) {
       print('Error caching jokes: $e');
@@ -68,7 +62,6 @@ class JokeService {
             .toList();
       }
 
-      // If no cached jokes found, return a default joke
       return [
         Joke(
           id: -1,
