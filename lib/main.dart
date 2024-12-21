@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MyHomePage(title: '😄 Fresh Jokes'),
+      home: const MyHomePage(title: 'Fresh Jokes'),
     );
   }
 }
