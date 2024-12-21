@@ -16,18 +16,19 @@ class MyApp extends StatelessWidget {
       title: 'Joke App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.purple,
+          seedColor: const Color(0xFF4CAF50), // Material Green
           brightness: Brightness.light,
         ),
         useMaterial3: true,
         cardTheme: CardTheme(
-          elevation: 4,
+          elevation: 2,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Color(0xFFE8F5E9), width: 1),
           ),
         ),
       ),
-      home: const MyHomePage(title: 'Daily Jokes'),
+      home: const MyHomePage(title: '😄 Fresh Jokes'),
     );
   }
 }
@@ -78,15 +79,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       setState(() {
         _jokes = jokes;
         _lastUpdate = lastCacheDate != null
-            ? 'Last updated: ${DateTime.parse(lastCacheDate).toLocal().toString().split('.')[0]}'
+            ? 'Updated: ${DateTime.parse(lastCacheDate).toLocal().toString().split('.')[0]}'
             : '';
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.red.shade400,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
     } finally {
@@ -101,49 +103,51 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF1F8E9), // Light green background
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.white,
         title: Text(
           widget.title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        elevation: 2,
-        centerTitle: true,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.surface.withOpacity(0.8),
-            ],
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF2E7D32), // Dark green text
           ),
         ),
+        elevation: 0,
+        centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(16),
+          ),
+        ),
+      ),
+      body: SafeArea(
         child: Column(
           children: [
             if (_lastUpdate.isNotEmpty)
               Container(
-                padding: const EdgeInsets.all(8.0),
-                margin: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE8F5E9)),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.access_time,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.primary,
+                      Icons.update,
+                      size: 14,
+                      color: Colors.green.shade700,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Text(
                       _lastUpdate,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.green.shade700,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -155,18 +159,29 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(),
+                    CircularProgressIndicator(
+                      color: Colors.green.shade600,
+                    ),
                     const SizedBox(height: 16),
                     Text(
-                      'Loading jokes...',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      'Finding fresh jokes...',
+                      style: TextStyle(
+                        color: Colors.green.shade700,
+                        fontSize: 16,
+                      ),
                     ),
                   ],
                 ),
               )
                   : _jokes.isEmpty
-                  ? const Center(child: Text('No jokes available'))
+                  ? Center(
+                child: Text(
+                  'No jokes available',
+                  style: TextStyle(color: Colors.green.shade700),
+                ),
+              )
                   : RefreshIndicator(
+                color: Colors.green.shade600,
                 onRefresh: _loadJokes,
                 child: ListView.builder(
                   itemCount: _jokes.length,
@@ -175,27 +190,37 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     return Hero(
                       tag: 'joke_${_jokes[index].id}',
                       child: Card(
-                        margin: const EdgeInsets.only(bottom: 16.0),
+                        margin: const EdgeInsets.only(bottom: 12.0),
+                        color: Colors.white,
                         child: InkWell(
                           onTap: () => _showJokeDialog(_jokes[index]),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           child: Container(
-                            padding: const EdgeInsets.all(20.0),
+                            padding: const EdgeInsets.all(16.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(
-                                      Icons.sentiment_very_satisfied,
-                                      color: Theme.of(context).colorScheme.primary,
+                                    Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFE8F5E9),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.emoji_emotions,
+                                        size: 20,
+                                        color: Colors.green.shade600,
+                                      ),
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
                                       'Joke #${index + 1}',
-                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.primary,
-                                        fontWeight: FontWeight.bold,
+                                      style: TextStyle(
+                                        color: Colors.green.shade700,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
                                       ),
                                     ),
                                   ],
@@ -203,8 +228,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                 const SizedBox(height: 12),
                                 Text(
                                   _jokes[index].text,
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                  style: const TextStyle(
+                                    fontSize: 15,
                                     height: 1.5,
+                                    color: Color(0xFF2E7D32),
                                   ),
                                 ),
                               ],
@@ -223,11 +250,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _loadJokes,
         tooltip: 'Refresh Jokes',
+        backgroundColor: Colors.green.shade600,
         icon: RotationTransition(
           turns: _refreshIconController,
-          child: const Icon(Icons.refresh),
+          child: const Icon(Icons.refresh, color: Colors.white),
         ),
-        label: const Text('New Jokes'),
+        label: const Text(
+          'New Jokes',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
@@ -239,28 +270,43 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.emoji_emotions,
-                size: 48,
-                color: Theme.of(context).colorScheme.primary,
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.sentiment_very_satisfied,
+                  size: 40,
+                  color: Colors.green.shade600,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
                 joke.text,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: 16,
                   height: 1.5,
+                  color: Colors.green.shade900,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.green.shade600,
+                ),
                 child: const Text('Close'),
               ),
             ],
